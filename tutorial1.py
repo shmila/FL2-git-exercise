@@ -273,6 +273,7 @@ def main():
     start = time.time()
     factorial(100)
     end = time.time()
+    print ("time it took" + str(end-start))
 
 if __name__ == "__main__":
     main()
