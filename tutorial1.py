@@ -1,3 +1,4 @@
+from random import randint
 from math import sqrt, pi, sin
 import time
 def is_prime(x):
@@ -23,7 +24,10 @@ def factorial(n):
     if(n==0 or n==1):
         return 1
     else:
-        return n*factorial(n-1)
+        res =n
+        for i in xrange(1,n):
+            res*=i
+        return res
 
 
 def my_sine_taylor_element(alpha, n):
@@ -256,12 +260,23 @@ def testPrint2():
     # a[1] = b
     print2(a)
 
+
+def main():
+    start = time.time()
+    # n = randint(100)
+    factorial(100)
+    end = time.time()
+    print(end-start)
+
 # testSin()
 # testFibo(n)
 # guessingANumberPvP()
 # testHanoi()
-testPrimes()
-testTakeWhile()
-testWords()
-print(baseFivePresentation(5))
-testPrint2()
+# testPrimes()
+# testTakeWhile()
+# testWords()
+# print(baseFivePresentation(5))
+# testPrint2()
+
+if __name__ == "__main__":
+    main()
