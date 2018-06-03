@@ -1,4 +1,3 @@
-from random import randint
 from math import sqrt, pi, sin
 import time
 def is_prime(x):
@@ -260,14 +259,6 @@ def testPrint2():
     # a[1] = b
     print2(a)
 
-
-def main():
-    start = time.time()
-    # n = randint(100)
-    factorial(100)
-    end = time.time()
-    print(end-start)
-
 # testSin()
 # testFibo(n)
 # guessingANumberPvP()
@@ -277,6 +268,11 @@ def main():
 # testWords()
 # print(baseFivePresentation(5))
 # testPrint2()
+
+def main():
+    start = time.time()
+    factorial(100)
+    end = time.time()
 
 if __name__ == "__main__":
     main()
