@@ -1,4 +1,0 @@
-Trial
- Iterative time = 0.000100135803223
- Recursive time = 0.0001380443573
- 
