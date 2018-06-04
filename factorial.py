@@ -27,6 +27,4 @@ avg = sum1 / num_times
 avg2 = sum2 / num_times
 print('recursive time is: %.4E' % avg)
 print('iterative time is: %.4E' % avg2)
-# num = int(input("Enter number\n"))
-# print(factorial(num))
-# print(factorial2(num))
+
