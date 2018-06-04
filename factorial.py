@@ -1,3 +1,5 @@
+import timeit
+
 def factorial(n):
     if n==0:
         return 1
@@ -9,7 +11,15 @@ def factorial2(n):
         sum *= i
     return sum
 
-
-num = int(input("Enter number\n"))
-print(factorial(num))
-print(factorial2(num))
+t = timeit.Timer(lambda: factorial(10))
+t2 = timeit.Timer(lambda: factorial2(10))
+sum = 0
+num_times = 1000    
+for i in range(num_times):
+    curr_time = t2.timeit(number=1)
+    sum += curr_time
+avg = sum / num_times
+print(avg)
+# num = int(input("Enter number\n"))
+# print(factorial(num))
+# print(factorial2(num))
