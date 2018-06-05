@@ -274,7 +274,10 @@ class TicTacToeGame(Game):
 
 
 if __name__ == "__main__":
-    game = TicTacToeGame()
+
+    game_options = {"Fizz Buzz":FizzGame,"TicTacToe":TicTacToeGame}
+    ans = raw_input("Please choose game name from this list: %s\n" % game_options.keys())
+    game = game_options[ans]()
     while True:
         game.start()
         ans = raw_input('One more? Y/N\n').upper()
