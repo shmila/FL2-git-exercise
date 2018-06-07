@@ -70,6 +70,13 @@ class MnistClassifier:
         acc = np.mean(pred_y == y_val)
         return h, acc
 
+    def shuffle_x_y(self,x,y):
+        both = np.concatenate((x, y.T),axis=1)
+        both = np.random.shuffle(both)
+        x = both[:,:-1]
+        y = both[:,-1]
+        return x,y
+
     def train(self,X,y,k,num_of_voters=3):
         # use cross validation
         hist = {}
@@ -79,6 +86,7 @@ class MnistClassifier:
 
         for j in range(num_of_voters):
             x_train, y_train, x_val, y_val = self.separate_data(X,y,k)
+            # x_train,y_train = self.shuffle_x_y(x_train,y_train)
             for i in range(10):
                 # train each h on its examples
                 ind_org = np.where(y_train == i)[0]
@@ -140,7 +148,7 @@ class MnistClassifier:
         num_examples, dim = X.shape
 
         num_val = int(num_examples * k)
-        x_train = copy.deepcopy(X)
+        x_train = copy.deepcopy(X)  ## exclude eval?!
         y_train = copy.deepcopy(y)
         x_val = np.zeros((num_val,dim))
         y_val = np.zeros(num_val)
@@ -180,6 +188,11 @@ class MnistClassifier:
         if show:
             # use this only in the last call of this function
             plt.show()
+
+    def show_hs(self):
+        hist = {}
+        for i in range(10):
+            hist[i] = []
 
 
 

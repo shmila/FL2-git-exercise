@@ -49,7 +49,7 @@ class Server:
             X_train = np.loadtxt(x_path)
             y_train = np.loadtxt(y_path)
             m = mnist.MnistClassifier()
-            m.train(X_train,y_train,k)
+            m.train(X_train,y_train,k,3)
             #finish training
             print("Finish to train on data")
             client.send("Ready for Testing!")

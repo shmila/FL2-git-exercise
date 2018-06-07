@@ -100,16 +100,14 @@ class Client(object):
 
         # predY = np.load(predAdd)
 
-        accuracy = np.sum(testY == predY)/100  ### Check formats
+        accuracy = np.sum(testY == predY)/100.0  ### Check formats
 
         return accuracy
 
-    def estConn(self, host_name = 'localhost', port = 5550):
+    def estConn(self, host_name = 'localhost', port = 5552):
         buff_size = 4096
         self.socket = skt.socket(skt.AF_INET, skt.SOCK_STREAM)
         self.socket.connect((host_name, port))
-        msg = self.socket.recv(buff_size)
-        print(msg)
 
 
     def evalK(self, k):
@@ -120,6 +118,8 @@ class Client(object):
         """
         buff_size = 4096
         # train
+        msg = self.socket.recv(buff_size)  # checking that server is ready to recieve data
+        print(msg)
         self.socket.send(str(k) + "," + self.trainAddX + "," + self.trainAddY)
         msg = self.socket.recv(buff_size)
         print(msg)
