@@ -113,6 +113,11 @@ class Client(object):
 
 
     def evalK(self, k):
+        """
+        For k (float) train server and test the accuracy of prediction, add it to self.kAccDict
+        :param k: |#eval images|/|#training images|
+        :return: k's accuracy
+        """
         buff_size = 4096
         # train
         self.socket.send(str(k) + "," + self.trainAddX + "," + self.trainAddY)
@@ -137,15 +142,34 @@ class Client(object):
         self.kAccDict[k] = kSucc
         print('k success perc is: ' + str(kSucc))
 
+        return kSucc
+
+    def run(self, kArr):
+        """
+        Establishes connection and evaluates prediction accuracy for each k in kArr
+        :param kArr: k's to be checked
+        :return: k's accuracy as a dict
+        """
+        c.loadData("filtered mnist")
+        c.splitTest()
+        c.createLink()
+        c.estConn()
+        for k in kArr:
+            c.evalK(k)
+        print("All k's have been tested")
+        c.socket.send('quit')
+        print("Server connection terminated")
+        print("Results are:")
+        print(self.kAccDict)
+
+        return self.kAccDict
+
 
 if __name__ == "__main__":
     c = Client()
-    c.loadData("filtered mnist")
-    c.splitTest()
-    c.createLink()
-    c.estConn()
-    c.evalK(0.1)
-    c.socket.send('quit')
+    kArr = [0.1, 0.2]
+    c.run(kArr)
+
     # for image in c.testX:
     #     imageInt = image.astype(int)
     #     istr = np.array2string(imageInt)
