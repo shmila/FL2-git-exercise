@@ -87,16 +87,47 @@ class MnistClassifier:
                 hi = self.consistency_algorithm(x_dig,y_dig)
                 pred_y = self.eval_all(hi, x_val)
                 acc = np.mean(pred_y == y_val)
-                hist[i].append((hi,acc))
-        self.hist = hist
+                # hist[i].append((hi,acc))
+                hist[i].append(hi)
+        self.hs = hist
 
     def pred(self,x):
         # assume x is one example
-        # assert self.hs
-        return 1
-        # num_voters = len(self.hs[0])
-        # preds_prob = []
-        # for i in range(len(self.hs)):
+        temp = self.hs[0]
+        num_voters = len(self.hs[0])
+        preds_prob = []
+        for i in range(len(self.hs)):
+            preds = []
+            num_ones = 0
+            num_zeros = 0
+            for h in self.hs[i]:
+                res = self.evaluate(h,x)
+                if res == 1:
+                    num_ones += 1
+                else:
+                    num_zeros += 1
+                preds.append(res)
+
+            if num_ones > num_zeros:
+                #res is 1
+                ans = 1
+                prob = float(num_ones)/num_voters
+            else:
+                #res is 0
+                ans = 0
+                prob = float(num_zeros)/num_voters
+            preds_prob.append((ans,prob))
+        max = 0
+        ind_max = 0
+        for i in range(len(preds_prob)):
+            p = preds_prob[i]
+            if p[1]>max:
+                max = p[1]
+                ind_max = i
+        return preds_prob[ind_max][0]
+
+
+
 
 
 

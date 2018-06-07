@@ -5,7 +5,7 @@ import mnist
 
 class Server:
 
-    def __init__(self,port=5550):
+    def __init__(self,port=5552):
         self.host = 'localhost'
         self.port = port
         # create a socket object
