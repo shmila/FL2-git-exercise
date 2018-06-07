@@ -104,7 +104,7 @@ class Client(object):
 
         return accuracy
 
-    def estConn(self, host_name = 'localhost', port = 5555):
+    def estConn(self, host_name = 'localhost', port = 5550):
         buff_size = 4096
         self.socket = skt.socket(skt.AF_INET, skt.SOCK_STREAM)
         self.socket.connect((host_name, port))
@@ -115,9 +115,9 @@ class Client(object):
     def evalK(self, k):
         buff_size = 4096
         # train
-        self.socket.send(str(k) +self.trainAddX + self.trainAddY)
+        self.socket.send(str(k) + "," + self.trainAddX + "," + self.trainAddY)
         msg = self.socket.recv(buff_size)
-        print("msg")
+        print(msg)
 
         # test
         predY = []
@@ -142,14 +142,18 @@ if __name__ == "__main__":
     c = Client()
     c.loadData("filtered mnist")
     c.splitTest()
-    for image in c.testX:
-        imageInt = image.astype(int)
-        istr = np.array2string(imageInt)
-        istr = istr[1:-1]
-        print(type(istr))
-        print(len(istr))
-        print(istr)
-        break
+    c.createLink()
+    c.estConn()
+    c.evalK(0.1)
+    c.socket.send('quit')
+    # for image in c.testX:
+    #     imageInt = image.astype(int)
+    #     istr = np.array2string(imageInt)
+    #     istr = istr[1:-1]
+    #     print(type(istr))
+    #     print(len(istr))
+    #     print(istr)
+    #     break
     # c.createLink()
     # c.estConn()
     # for k in [0.5, 0.1, 0.15, 0.2]
