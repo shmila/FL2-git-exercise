@@ -60,4 +60,8 @@ decrypt = lambda x: ''.join(map(decrypt_c, x))
 encrypt = lambda x: ''.join(map(encrypt_c, x))
 
 text1_hist = get_n_hist(text1[20000:25000], 2)
+for i in range(len(encrpted_alephbeth)):
+    print('%s:%s' % (alephbeth[i], encrpted_alephbeth[i]))
+
+map_dict = dict(zip(alephbeth, [x.lower() for x in encrpted_alephbeth]))
 print decrypt(max(text1_hist.items(), key=lambda x: x[1])[0])
