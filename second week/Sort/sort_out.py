@@ -85,7 +85,6 @@ class KalmanFilter():
         self.Q = np.eye(dim_x, dim_x)
         self.x = np.ones((dim_x, 1))
 
-    # todo: fix predict and update
     def predict(self):
         self.x = self.F.dot(self.x)
         self.P = (self.F.dot(self.P)).dot(self.F.T) + self.Q
@@ -149,6 +148,7 @@ class KalmanBoxTracker(object):
         """
         Advances the state vector and returns the predicted bounding box estimate.
         """
+        # the new scale + old scale is <=0
         if (self.kf.x[6] + self.kf.x[2]) <= 0:
             self.kf.x[6] *= 0.0
         self.kf.predict()
@@ -204,7 +204,6 @@ def associate_detections_to_trackers(detections, trackers, iou_threshold=0.3):
         matches = np.empty((0, 2), dtype=int)
     else:
         matches = np.concatenate(matches, axis=0)
-        # print("matches are: ", str(matches))
     return matches, np.array(unmatched_detections), np.array(unmatched_trackers)
 
 
@@ -217,6 +216,7 @@ class Sort(object):
         self.min_hits = min_hits
         self.trackers = []
         self.frame_count = 0
+        self.start_time = time.time()
 
     def update(self, dets):
         """
@@ -234,19 +234,26 @@ class Sort(object):
         ret = []
 
         for t, trk in enumerate(trks):
+            # get the bbox
             pos = self.trackers[t].predict()[0]
             trk[:] = [pos[0], pos[1], pos[2], pos[3], 0]
-            if np.any(np.isnan(pos)):
-                to_del.append(t)
+
+            if np.any(np.isnan(pos)) or np.any(np.isinf(pos)):
+                to_del.append(self.trackers[t])
+
         trks = np.ma.compress_rows(np.ma.masked_invalid(trks))
 
-        for t in reversed(to_del):
-            pass
+        for trk in reversed(to_del):
+            self.trackers.remove(trk)
+
         matched, unmatched_dets, unmatched_trks = associate_detections_to_trackers(dets, trks)
-        # print("matched: " + str(matched))
+
+        total_time = time.time() - self.start_time
+        print('created %d trackers in %.2f seconds' % (KalmanBoxTracker.count,total_time))
         # update matched trackers with assigned detections
         for t, trk in enumerate(self.trackers):
             if t not in unmatched_trks:
+                # this tracker is matched to some detection
                 d = matched[np.where(matched[:, 1] == t)[0], 0]
                 trk.update(dets[d, :][0])
 
@@ -257,16 +264,21 @@ class Sort(object):
             self.trackers.append(trk)
 
         i = len(self.trackers)
+        print('number of trackers in list %d'%i)
+        to_del = []
+
         for trk in reversed(self.trackers):
             d = trk.get_state()[0]
 
-            if trk.time_since_update < 1:
+            if trk.time_since_update < 1 and trk.hit_streak>= self.min_hits:
                 ret.append(np.concatenate((d, [trk.id + 1])).reshape(1, -1))  # +1 as MOT benchmark requires positive
             i -= 1
             # remove dead tracklet
-
             if trk.time_since_update > self.max_age:
-                pass
+                to_del.append(trk)
+
+        for trk in to_del:
+            self.trackers.remove(trk)
 
         if len(ret) > 0:
             return np.concatenate(ret)
@@ -319,7 +331,7 @@ if __name__ == '__main__':
                     fn = 'mot_benchmark/%s/%s/img1/%06d.jpg' % (phase, seq, frame)
                     im = io.imread(fn)
                     ax1.imshow(im)
-                    plt.title(seq + ' Tracked Targets')
+                    plt.title(seq + ' Tracked Targets - sort py')
 
                 start_time = time.time()
                 trackers = mot_tracker.update(dets)
