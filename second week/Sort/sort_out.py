@@ -122,8 +122,8 @@ class KalmanBoxTracker(object):
         self.kf.R[2:, 2:] *= 10.
         self.kf.P[4:, 4:] *= 1000.  # give high uncertainty to the unobservable initial velocities
         self.kf.P *= 10.
-        self.kf.Q[-1, -1] *= 0.01
-        self.kf.Q[4:, 4:] *= 0.01
+        self.kf.Q[-1, -1] *=  0.01
+        self.kf.Q[4:, 4:] *= 1e-6  #0.01
 
         self.kf.x[:4] = convert_bbox_to_z(bbox)
         self.time_since_update = 0
@@ -250,6 +250,8 @@ class Sort(object):
 
         total_time = time.time() - self.start_time
         print('created %d trackers in %.2f seconds' % (KalmanBoxTracker.count,total_time))
+        if KalmanBoxTracker.count>50:
+            exit()
         # update matched trackers with assigned detections
         for t, trk in enumerate(self.trackers):
             if t not in unmatched_trks:
