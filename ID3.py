@@ -113,6 +113,29 @@ def get_rank_list(root,ind=0,rank_list=[]):
         rank_list = get_rank_list(child,ind+1,rank_list)
     return rank_list
 
+def predict(root,example):
+    flag = True
+    parent = root
+    while len(parent.children)>0:
+        if len(parent.children)==1:
+            # means it is the header child or the result
+            parent = parent.children[0]
+            continue
+        attr = parent.label
+        attr_val = example[attr]
+        correct_child = None
+        for child in parent.children:
+            if attr_val == child.label:
+                correct_child = child
+                break
+        if correct_child == None:
+            return None
+        parent = correct_child
+    return parent.label
+
+
+
+
 
 class Node(object):
 
@@ -145,5 +168,7 @@ if __name__ == "__main__":
     root = id3(examples,target_attr,headers)
     r_list = get_rank_list(root)
     print(r_list)
+    for ex in examples:
+        print(predict(root,ex))
 
     #took the examples from https://github.com/tofti/python-id3-trees
